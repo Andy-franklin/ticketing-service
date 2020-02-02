@@ -8,12 +8,23 @@ use App\Helper\QRCodeHelper;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Ramsey\Uuid\Uuid;
-
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
+ *     normalizationContext={"groups"={"ticket:output"}},
+ *     denormalizationContext={"groups"={"ticket:input"}},
  *     collectionOperations={"get", "post"},
- *     itemOperations={"get", "put", "delete", "patch"}
+ *     itemOperations={"get", "put", "delete", "patch",
+ *          "check-in" = {
+ *              "method": "POST",
+ *              "path"= "/tickets/{id}/check-in",
+ *              "controller"= CheckInTicket::class,
+ *              "openapi_context" = {
+ *                  "summary": "Check in the ticket"
+ *              }
+ *          }
+ *     }
  * )
  * @ORM\Entity(repositoryClass="App\Repository\TicketRepository")
  */
@@ -24,35 +35,49 @@ class Ticket
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      * @ApiProperty(identifier=false)
+     * @Groups({"ticket:output"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @ApiProperty(identifier=true)
+     * @Groups({"ticket:output"})
      */
     private $guid;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"ticket:output", "ticket:input"})
      */
     private $user_id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"ticket:output", "ticket:input"})
      */
     private $ticket_type;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"ticket:output"})
      */
     private $qr_image;
 
     /**
      * @var \DateTime $createdAt
      *
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"ticket:output"})
+     */
+    private $checkedInAt;
+
+    /**
+     * @var \DateTime $createdAt
+     *
      * @Gedmo\Timestampable(on="create")
      * @ORM\Column(type="datetime")
+     * @Groups({"ticket:output"})
      */
     private $createdAt;
 
@@ -61,6 +86,7 @@ class Ticket
      *
      * @Gedmo\Timestampable(on="update")
      * @ORM\Column(type="datetime")
+     * @Groups({"ticket:output"})
      */
     private $updatedAt;
 
@@ -129,5 +155,33 @@ class Ticket
     public function getUpdatedAt(): \DateTime
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCheckedInAt(): \DateTime
+    {
+        return $this->checkedInAt;
+    }
+
+    /**
+     * @param \DateTime $checkedInAt
+     *
+     * @return Ticket
+     */
+    public function setCheckedInAt(\DateTime $checkedInAt): Ticket
+    {
+        $this->checkedInAt = $checkedInAt;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCheckedIn(): bool
+    {
+        return (null !== $this->checkedInAt);
     }
 }

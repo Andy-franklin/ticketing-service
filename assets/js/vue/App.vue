@@ -2,21 +2,23 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <h2>Ticket Check In</h2>
+                <h2 class="text-center mt-4">Ticket Check In</h2>
             </div>
         </div>
         <div class="row">
             <div class="col">
                 <p class="error">{{ error }}</p>
-                <p class="decode-result">Status: <b>{{ status }}</b></p>
-                <qrcode-stream @decode="onDecode" v-if="ticketFound === false"></qrcode-stream>
+                <p class="decode-result text-center">Status: <b>{{ status }}</b></p>
+                <div class="qr-stream-wrapper" v-if="ticketFound === false">
+                    <qrcode-stream @decode="onDecode"></qrcode-stream>
+                </div>
                 <div v-else>
                     <p>UserID: {{ ticketInformation.userId }}</p>
                     <p>Ticket Type: {{ ticketInformation.ticketType }}</p>
                     <p>Ticket Created: {{ ticketInformation.createdAt }}</p>
 
                     <a class="btn btn-outline-danger" @click="reset()">Restart</a>
-                    <a class="btn btn-primary">Check In</a>
+                    <a class="btn btn-primary" @click="checkIn()">Check In</a>
                 </div>
             </div>
         </div>
@@ -44,6 +46,9 @@
             }
         },
         methods: {
+            checkIn() {
+
+            },
             reset() {
                 this.ticketInformation = false;
                 this.ticketFound = false;
@@ -76,9 +81,13 @@
             onDecode(result) {
                 this.result = result;
 
-                let ticketGuid = result.split("--")[1];
+                let ticketParts = result.split("--");
 
-                this.getData(ticketGuid)
+                if (ticketParts[0] === 'ticket') {
+                    this.status = 'Invalid QR Code'
+                } else {
+                    this.getData(ticketParts[1])
+                }
             },
             async onInit(promise) {
                 try {
@@ -103,9 +112,13 @@
     }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
     .error {
         font-weight: bold;
         color: red;
+    }
+
+    .qr-stream-wrapper {
+        height: 300px;
     }
 </style>
