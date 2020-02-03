@@ -13,8 +13,8 @@
                     <qrcode-stream @decode="onDecode"></qrcode-stream>
                 </div>
                 <div v-else>
-                    <p>UserID: {{ ticketInformation.userId }}</p>
-                    <p>Ticket Type: {{ ticketInformation.ticketType }}</p>
+                    <p>UserID: {{ ticketInformation.user_id }}</p>
+                    <p>Ticket Type: {{ ticketInformation.ticket_type }}</p>
                     <p>Ticket Created: {{ ticketInformation.createdAt }}</p>
 
                     <a class="btn btn-outline-danger" @click="reset()">Restart</a>
@@ -83,7 +83,7 @@
 
                 let ticketParts = result.split("--");
 
-                if (ticketParts[0] === 'ticket') {
+                if (ticketParts[0] !== 'ticket') {
                     this.status = 'Invalid QR Code'
                 } else {
                     this.getData(ticketParts[1])

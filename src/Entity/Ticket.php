@@ -37,32 +37,32 @@ class Ticket
      * @ApiProperty(identifier=false)
      * @Groups({"ticket:output"})
      */
-    private $id;
+    public $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @ApiProperty(identifier=true)
      * @Groups({"ticket:output"})
      */
-    private $guid;
+    public $guid;
 
     /**
      * @ORM\Column(type="integer")
      * @Groups({"ticket:output", "ticket:input"})
      */
-    private $user_id;
+    public $user_id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"ticket:output", "ticket:input"})
      */
-    private $ticket_type;
+    public $ticket_type;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"ticket:output"})
      */
-    private $qr_image;
+    public $qr_image;
 
     /**
      * @var \DateTime $createdAt
@@ -70,7 +70,7 @@ class Ticket
      * @ORM\Column(type="datetime", nullable=true)
      * @Groups({"ticket:output"})
      */
-    private $checkedInAt;
+    public $checkedInAt;
 
     /**
      * @var \DateTime $createdAt
@@ -79,7 +79,7 @@ class Ticket
      * @ORM\Column(type="datetime")
      * @Groups({"ticket:output"})
      */
-    private $createdAt;
+    public $createdAt;
 
     /**
      * @var \DateTime $updatedAt
@@ -88,7 +88,7 @@ class Ticket
      * @ORM\Column(type="datetime")
      * @Groups({"ticket:output"})
      */
-    private $updatedAt;
+    public $updatedAt;
 
     /**
      * Ticket constructor.
@@ -99,7 +99,7 @@ class Ticket
     {
         $this->guid = Uuid::uuid4()->toString();
         QRCodeHelper::generateQRCode('ticket--' . $this->guid);
-        $this->qr_image = '/public/qr-codes/ticket--' . $this->guid . '.svg';
+        $this->qr_image = '/qr-codes/ticket--' . $this->guid . '.svg';
     }
 
     public function getId(): ?int
@@ -160,7 +160,7 @@ class Ticket
     /**
      * @return \DateTime
      */
-    public function getCheckedInAt(): \DateTime
+    public function getCheckedInAt(): ?\DateTime
     {
         return $this->checkedInAt;
     }
